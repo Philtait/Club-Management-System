@@ -1,53 +1,63 @@
-# 📚 Club Management System – Strathmore University
+# Club Management System
 
-A web-based Club Management System designed to streamline student engagement, event coordination, and administrative oversight within Strathmore University. This system was developed as a final-year Computer Science project, following the Design Thinking methodology, with a strong emphasis on usability, security, and scalability.
+A **web-based Club Management System** developed as a final-year Computer Science project at **Strathmore University**.
 
----
-
-## 🎯 Project Overview
-
-This platform provides a centralized solution for managing all student clubs and societies. It enables students to discover, join, and interact with clubs; allows club leaders to manage events, members, and feedback; and equips administrators with tools for oversight, approvals, and reporting.
+This platform simplifies the management of student clubs, event planning, member engagement, feedback, and administrative oversight through a centralized portal.
 
 ---
 
-## 👨‍💻 Key Features
+## 🔍 Features
 
-- Role-based user access (Student, Club Leader, Administrator)
-- Secure student registration using university ID
-- Club creation and approval workflows
+- Student, Club Leader, and Admin roles with role-based access
+- Club creation request and approval workflow
+- Event scheduling and registration
 - Membership management (join/exit)
-- Event scheduling, promotion, and registration
-- Feedback and review system
-- M-PESA payment integration for club fees
-- Email notifications and reminders
-- Admin dashboards with reporting and logs
+- Notifications and email alerts
+- Feedback submission
+- Admin reporting and oversight dashboards
+- M-PESA payment integration (planned)
 
 ---
 
-## 🧱 Tech Stack
+## 🛠 Tech Stack
 
-- **Frontend:** HTML, CSS, JavaScript, Jinja2
-- **Backend:** Python, Flask
-- **Database:** MySQL (Relational DBMS)
-- **Design & Prototyping:** Figma, Draw.io
-- **Testing:** Postman, Unit Testing (PyTest)
-- **Version Control:** Git & GitHub
+- **Backend**: Python, Flask, SQLAlchemy
+- **Frontend**: HTML, CSS, JavaScript, Jinja2
+- **Database**: MySQL
+- **Tools**: Figma, Postman, Git, Draw.io
 
 ---
 
-## 🚀 Getting Started
+## ⚙️ Getting Started
 
-### 🛠 Prerequisites
+### 🔧 Prerequisites
 
 - Python 3.10+
 - MySQL Server
+- pip
 - Git
-- Virtual Environment (recommended)
-- M-PESA Daraja API credentials (for payment integration)
 
-### 🔧 Installation
+### 📦 Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/<your-username>/club-management-system.git
-   cd club-management-system
+```bash
+# Clone the repository
+git clone https://github.com/your-username/Club-Management-System.git
+
+# Navigate to project directory
+cd Club-Management-System
+
+# Create a virtual environment (optional but recommended)
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Create your .env file and configure DB and secret key
+cp .env.example .env
+
+# Run the application
+flask run
+
+
+
