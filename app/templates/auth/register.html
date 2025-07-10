@@ -1,0 +1,209 @@
+<!-- File: app/templates/auth/register.html -->
+{% extends "base.html" %}
+
+{% block title %}Register | Club Management System{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center">
+          <h4 class="mb-0">Create Your Account</h4>
+        </div>
+        <div class="card-body">
+          <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+            {{ form.csrf_token }}
+
+            <!-- Name -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="first_name">First Name</label>
+                {{ form.first_name(class="form-control" + (' is-invalid' if form.first_name.errors else '')) }}
+                {% for err in form.first_name.errors %}
+                  <div class="invalid-feedback">{{ err }}</div>
+                {% endfor %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="last_name">Last Name</label>
+                {{ form.last_name(class="form-control" + (' is-invalid' if form.last_name.errors else '')) }}
+                {% for err in form.last_name.errors %}
+                  <div class="invalid-feedback">{{ err }}</div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Email & Phone -->
+            <div class="mb-3">
+              <label class="form-label" for="email">Email</label>
+              {{ form.email(class="form-control" + (' is-invalid' if form.email.errors else '')) }}
+              {% for err in form.email.errors %}
+                <div class="invalid-feedback">{{ err }}</div>
+              {% endfor %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="phone">Phone</label>
+              {{ form.phone(class="form-control" + (' is-invalid' if form.phone.errors else '')) }}
+              {% for err in form.phone.errors %}
+                <div class="invalid-feedback">{{ err }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Gender & Role -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="gender">Gender</label>
+                {{ form.gender(class="form-select" + (' is-invalid' if form.gender.errors else '')) }}
+                {% for err in form.gender.errors %}
+                  <div class="invalid-feedback">{{ err }}</div>
+                {% endfor %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="role">Role</label>
+                {{ form.role(class="form-select" + (' is-invalid' if form.role.errors else ''), id="role") }}
+                {% for err in form.role.errors %}
+                  <div class="invalid-feedback">{{ err }}</div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Student Fields -->
+            <div id="StudentFields" class="mb-3" style="display: none;">
+              <h5>Student Details</h5>
+              <div class="mb-3">
+                <label class="form-label" for="school">School/Faculty</label>
+                {{ form.school(class="form-control") }}
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="program">Program</label>
+                {{ form.program(class="form-control") }}
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="year_of_study">Year of Study</label>
+                {{ form.year_of_study(class="form-control") }}
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="expected_graduation_year">Expected Graduation Year</label>
+                {{ form.expected_graduation_year(class="form-control") }}
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="interests">Interests</label>
+                {{ form.interests(class="form-control", rows="3") }}
+              </div>
+            </div>
+
+            <!-- Admin Fields -->
+            <div id="AdminFields" class="mb-3" style="display: none;">
+              <h5>Administrator Details</h5>
+              <div class="mb-3">
+                <label class="form-label" for="staff_id">Staff ID</label>
+                {{ form.staff_id(class="form-control") }}
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="department_name">Department</label>
+                {{ form.department_name(class="form-control") }}
+              </div>
+            </div>
+
+          
+                <!-- Password + Toggle -->
+            <div class="mb-3 position-relative">
+              <label for="password" class="form-label">Password</label>
+              <div class="input-group">
+                {{ form.password(
+                    class="form-control" + (" is-invalid" if form.password.errors else ""),
+                    id="password",
+                    placeholder="Enter password"
+                ) }}
+                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                  <i class="fa fa-eye"></i>
+                </button>
+              </div>
+              {% for err in form.password.errors %}
+                <div class="invalid-feedback d-block">{{ err }}</div>
+              {% endfor %}
+              <div id="passwordHelpBlock" class="form-text mt-1">
+                Must be at least 8 characters and include uppercase, lowercase, a digit &amp; a special character.
+              </div>
+            </div>
+
+            <!-- Confirm Password + Match Indicator -->
+            <div class="mb-3 position-relative">
+              <label for="confirm_password" class="form-label">Confirm Password</label>
+              <div class="input-group">
+                {{ form.confirm_password(
+                    class="form-control" + (" is-invalid" if form.confirm_password.errors else ""),
+                    id="confirm_password",
+                    placeholder="Re-enter password"
+                ) }}
+                <span class="input-group-text" id="matchIndicator"></span>
+              </div>
+              {% for err in form.confirm_password.errors %}
+                <div class="invalid-feedback d-block">{{ err }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Submit -->
+            <div class="d-grid mt-4">
+              {{ form.submit(class="btn btn-primary") }}
+            </div>
+
+            <!-- Link to Login -->
+            <div class="mt-3 text-center">
+              <span class="small">Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Show/hide Student/Admin fields based on role selection
+document.addEventListener("DOMContentLoaded", function(){
+  const roleSelect = document.getElementById("role");
+  const studentFields = document.getElementById("StudentFields");
+  const adminFields = document.getElementById("AdminFields");
+
+  function toggleFields(){
+    const role = roleSelect.value;
+    studentFields.style.display = (role === "Student") ? "block" : "none";
+    adminFields.style.display   = (role === "Admin")   ? "block" : "none";
+  }
+
+  roleSelect.addEventListener("change", toggleFields);
+  toggleFields();  // initial
+
+  // Set initial visibility based on default role
+  const password        = document.getElementById('password');
+  const confirmPassword = document.getElementById('confirm_password');
+  const togglePassword  = document.getElementById('togglePassword');
+  const matchIndicator  = document.getElementById('matchIndicator');
+
+  // Show / hide password
+  togglePassword.addEventListener('click', () => {
+    const type = password.type === 'password' ? 'text' : 'password';
+    password.type = type;
+    confirmPassword.type = type;
+    togglePassword.querySelector('i').classList.toggle('fa-eye-slash');
+  });
+
+  // Check match in real-time
+  function checkMatch() {
+    if (!confirmPassword.value) {
+      matchIndicator.innerHTML = '';
+      return;
+    }
+    if (password.value === confirmPassword.value) {
+      matchIndicator.innerHTML = '<i class="fa fa-check text-success"></i>';
+    } else {
+      matchIndicator.innerHTML = '<i class="fa fa-times text-danger"></i>';
+    }
+  }
+
+  password.addEventListener('input',  checkMatch);
+  confirmPassword.addEventListener('input', checkMatch);
+});
+</script>
+{% endblock %}

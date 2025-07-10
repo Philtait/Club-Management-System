@@ -1,0 +1,55 @@
+<!-- File: app/templates/auth/login.html -->
+{% extends "base.html" %}
+
+{% block title %}Login | Club Management System{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center">
+          <h3 class="mb-0">Welcome Back</h3>
+        </div>
+        <div class="card-body">
+          <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
+            {{ form.csrf_token }}
+
+            <div class="mb-3">
+              <label class="form-label" for="email">Email Address</label>
+              {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+              {% for error in form.email.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="password">Password</label>
+              {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else "")) }}
+              {% for error in form.password.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="form-check mb-3">
+              {{ form.remember(class="form-check-input") }}
+              <label class="form-check-label" for="remember">Remember Me</label>
+            </div>
+
+            <div class="d-grid mt-3">
+              {{ form.submit(class="btn btn-primary") }}
+            </div>
+          </form>
+
+          <div class="mt-3 text-center">
+            <a href="{{ url_for('auth.reset_request') }}" class="small">Forgot Password?</a>
+          </div>
+          <div class="mt-2 text-center">
+            <span class="small">Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
