@@ -1,0 +1,307 @@
+<!-- File: app/templates/dashboard.html -->
+{% extends "base.html" %}
+{% block title %}Dashboard | Club Management System{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h1 class="mb-4">Dashboard</h1>
+
+  {% if current_user.role == 'Student' and current_user.student %}
+    <!-- Summary Stats -->
+    <div class="row g-4 mb-5">
+      <div class="col-md-3">
+        <div class="card text-white bg-primary h-100">
+          <div class="card-body">
+            <h5 class="card-title">Clubs Joined</h5>
+            <p class="card-text display-6">{{ stats.active_memberships }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-white bg-primary h-100">
+          <div class="card-body">
+            <h5 class="card-title">Registered Events</h5>
+            <p class="card-text display-6">{{ stats.upcoming_registered }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-white bg-primary h-100">
+          <div class="card-body">
+            <h5 class="card-title">Past Events</h5>
+            <p class="card-text display-6">{{ stats.past_events }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Clubs -->
+    <section class="mb-5">
+      <h3 class="mb-3">My Clubs</h3>
+      {% if memberships %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+          {% for m in memberships %}
+          <div class="col">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">
+                  <a href="{{ url_for('clubs.view_club', club_id=m.club.club_id) }}">
+                    {{ m.club.name }}
+                  </a>
+                </h5>
+                <p class="mb-1">
+                  <small class="text-muted">
+                    Joined on {{ m.joined_on.strftime('%b %d, %Y') }}
+                  </small>
+                </p>
+                {% if m.club.description %}
+                <p class="card-text flex-grow-1">
+                  {{ m.club.description[:100] }}
+                  {% if m.club.description|length > 100 %}…{% endif %}
+                </p>
+                {% endif %}
+                <div class="mt-3">
+                  <a href="{{ url_for('clubs.view_club', club_id=m.club.club_id) }}"
+                     class="btn btn-outline-primary btn-sm">
+                    View Club
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted">
+          You haven’t joined any clubs yet.
+          <a href="{{ url_for('clubs.list_clubs') }}">Browse Clubs</a>
+        </p>
+      {% endif %}
+    </section>
+
+    <!-- Upcoming Events in My Clubs -->
+    <section class="mb-5">
+      <h3 class="mb-3">Upcoming Events in My Clubs</h3>
+      {% if upcoming_events %}
+        <div class="list-group">
+          {% for ev in upcoming_events %}
+          <div class="list-group-item d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="mb-1">{{ ev.title }}</h5>
+              <p class="mb-1">
+                <small class="text-muted">
+                  {{ ev.club.name }} —
+                  {{ ev.event_date.strftime('%b %d, %Y %I:%M %p') }}
+                </small>
+              </p>
+            </div>
+            <div class="btn-group">
+              <a href="{{ url_for('events.view_event', event_id=ev.event_id) }}"
+                 class="btn btn-sm btn-primary">
+                Details
+              </a>
+              <a href="{{ url_for('feedback.submit_feedback', event_id=ev.event_id) }}"
+                  class="btn btn-sm btn-secondary">
+                Submit Feedback
+              </a>
+              <a href="{{ url_for('feedback.view_event_feedback', event_id=ev.event_id) }}"
+                  class="btn btn-sm btn-outline-primary">
+                View Feedback
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted">No upcoming events in your clubs.</p>
+      {% endif %}
+    </section>
+
+  {% elif current_user.role == 'ClubLeader' and current_user.club_leaderships %}
+    <!-- Summary Stats -->
+    <div class="row g-4 mb-5">
+      <div class="col-md-4">
+        <div class="card text-white bg-primary h-100">
+          <div class="card-body">
+            <h5 class="card-title">Clubs You Lead</h5>
+            <p class="card-text display-6">{{ stats.clubs_led }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-white bg-primary h-100">
+          <div class="card-body">
+            <h5 class="card-title">Pending Memberships</h5>
+            <p class="card-text display-6">{{ stats.pending_requests }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manage Leaders -->
+    <p>
+      <a class="btn btn-outline-secondary"
+         href="{{ url_for('clubs.manage_leaders', club_id=current_user.club_leaderships[0].club_id) }}">
+        Manage Leaders
+      </a>
+    </p>
+
+    <!-- Active Members -->
+    <section class="mt-5">
+      <h3>Your Club’s Members</h3>
+      {% if members %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th><th>School</th><th>Year</th><th>Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for member in members %}
+            <tr>
+              <td>{{ member.student.user.first_name }} {{ member.student.user.last_name }}</td>
+              <td>{{ member.student.school }}</td>
+              <td>{{ member.student.year_of_study }}</td>
+              <td>{{ member.joined_on.strftime('%Y-%m-%d') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="text-muted">No active members found.</p>
+      {% endif %}
+    </section>
+
+    <!-- Pending Membership Requests -->
+    <section class="mt-5">
+      <h3>Pending Membership Requests</h3>
+      {% if pending_requests %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Student</th><th>School</th><th>Year</th>
+              <th>Requested On</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for req in pending_requests %}
+            <tr>
+              <td>{{ req.student.user.first_name }} {{ req.student.user.last_name }}</td>
+              <td>{{ req.student.school }}</td>
+              <td>{{ req.student.year_of_study }}</td>
+              <td>{{ req.joined_on.strftime('%Y-%m-%d') }}</td>
+              <td>
+                <form method="POST"
+                      action="{{ url_for('membership.approve_member', club_id=req.club_id, mid=req.membership_id) }}"
+                      style="display:inline-block;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="btn btn-sm btn-success">Approve</button>
+                </form>
+                <form method="POST"
+                      action="{{ url_for('membership.reject_member', club_id=req.club_id, mid=req.membership_id) }}"
+                      style="display:inline-block; margin-left:5px;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="btn btn-sm btn-danger">Reject</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="text-muted">No pending requests.</p>
+      {% endif %}
+    </section>
+
+    <!-- Upcoming Event Registrations -->
+    <section class="mt-5">
+      <h3>Upcoming Event Registrations</h3>
+      {% if upcoming_regs %}
+        <table class="table table-striped">
+          <thead>
+            <tr><th>Event</th><th>Date</th><th>Registrant</th></tr>
+          </thead>
+          <tbody>
+            {% for reg in upcoming_regs %}
+            <tr>
+              <td>{{ reg.event.title }}</td>
+              <td>{{ reg.event.event_date.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td>{{ reg.student.user.first_name }} {{ reg.student.user.last_name }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="text-muted">No upcoming registrations.</p>
+      {% endif %}
+    </section>
+
+    <!-- Feedback for Your Events -->
+    <section class="mt-5">
+      <h3>Feedback for Your Events</h3>
+      {% if feedbacks %}
+        <table class="table table-striped">
+          <thead>
+            <tr><th>Event</th><th>Rating</th><th>Comments</th><th>Submitted On</th></tr>
+          </thead>
+          <tbody>
+            {% for fb in feedbacks %}
+            <tr>
+              <td><a href="{{ url_for('events.view_event', event_id=fb.event.event_id) }}">{{ fb.event.title }}</a></td>
+              <td>{{ fb.rating }} / 5</td>
+              <td>{{ fb.message }}</td>
+              <td>{{ fb.submitted_on.strftime('%b %d, %Y') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="text-muted">No feedback received yet.</p>
+      {% endif %}
+    </section>
+
+  {% elif current_user.role == 'Admin' %}
+    <!-- Summary Stats -->
+    <div class="row g-4 mb-5">
+      <div class="col-md-4">
+        <div class="card text-white bg-primary h-100">
+          <div class="card-body">
+            <h5 class="card-title">Total Users</h5>
+            <p class="card-text display-6">{{ stats.total_users }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-white bg-primary h-100">
+          <div class="card-body">
+            <h5 class="card-title">Total Clubs</h5>
+            <p class="card-text display-6">{{ stats.total_clubs }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-white bg-primary h-100">
+          <div class="card-body">
+            <h5 class="card-title">Total Events</h5>
+            <p class="card-text display-6">{{ stats.total_events }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p>
+      <a class="btn btn-outline-secondary me-2" href="{{ url_for('admin.pending_clubs') }}">
+        <i class="fas fa-hourglass-start me-1"></i> Pending Clubs
+      </a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('payments.admin_pending_payments') }}">
+        <i class="fas fa-credit-card me-1"></i> Pending Payments
+      </a>
+    </p>
+
+  {% else %}
+    <!-- Fallback -->
+    <p class="text-danger">Dashboard data unavailable.</p>
+  {% endif %}
+
+</div>
+{% endblock %}

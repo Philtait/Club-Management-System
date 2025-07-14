@@ -1,0 +1,74 @@
+<!-- File: templates/clubs.html -->
+{% extends "base.html" %}
+
+{% block title %}Clubs | Club Management System{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Clubs</h2>
+    <a href="{{ url_for('clubs.create_club') }}" class="btn btn-primary">Create New Club</a>
+  </div>
+
+  <!-- Filter and Search -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <select id="categoryFilter" class="form-select">
+        <option value="all">All Categories</option>
+        {% for category in categories %}
+        <option value="{{ category }}">{{ category }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-8">
+      <input type="text" id="searchInput" class="form-control" placeholder="Search clubs by name...">
+    </div>
+  </div>
+
+  <!-- Club Cards -->
+  <div class="row" id="clubList">
+    {% for club in clubs %}
+    <div class="col-md-4 mb-4 club-card" data-category="{{ club.category|lower }}">
+      <div class="card h-100">
+        <img src="{{ url_for('static', filename='images/' ~ (club.logo_url or 'default-club.jpg')) }}"
+             class="card-img-top" alt="{{ club.name }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ club.name }}</h5>
+          <p class="card-text">{{ club.description[:100] }}...</p>
+          <a href="{{ url_for('clubs.view_club', club_id=club.club_id) }}" class="btn btn-sm btn-outline-primary">
+            View Club
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if not clubs %}
+    <p class="text-muted text-center">No clubs have been created yet.</p>
+  {% endif %}
+</div>
+
+<script>
+  // Client-side filtering
+  document.addEventListener('DOMContentLoaded', () => {
+    const filter = document.getElementById('categoryFilter');
+    const search = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.club-card');
+
+    function updateCards() {
+      const category = filter.value.toLowerCase();
+      const query = search.value.toLowerCase();
+
+      cards.forEach(card => {
+        const matchCategory = category === 'all' || card.dataset.category === category;
+        const matchSearch = card.querySelector('.card-title').textContent.toLowerCase().includes(query);
+        card.style.display = matchCategory && matchSearch ? 'block' : 'none';
+      });
+    }
+
+    filter.addEventListener('change', updateCards);
+    search.addEventListener('input', updateCards);
+  });
+</script>
+{% endblock %}

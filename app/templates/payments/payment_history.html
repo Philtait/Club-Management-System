@@ -1,0 +1,43 @@
+<!-- File: app/templates/payments/payment_history.html -->
+{% extends "base.html" %}
+{% block title %}Payment History{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2>My Payments</h2>
+  {% if payments %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Related To</th>
+        <th>Amount (KES)</th>
+        <th>Status</th>
+        <th>Transaction Code</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in payments %}
+      <tr>
+        <td>{{ p.payment_date.strftime('%b %d, %Y %I:%M %p') }}</td>
+        <td>
+          {% if p.purpose == 'Membership' %}
+            {{ p.club.name }}
+          {% elif p.purpose == 'Event' %}
+            {{ p.event.title }}
+          {% else %}
+            &mdash;
+          {% endif %}
+        </td>
+        <td>{{ "{:,.2f}".format(p.amount) }}</td>
+        <td>{{ p.status }}</td>
+        <td>{{ p.transaction_code }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No payments found.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+<!-- File: app/templates/clubs/request_club.html -->
+{% extends "base.html" %}
+{% block title %}Request New Club{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2>Request a New Club</h2>
+  <form method="POST" enctype="multipart/form-data" action="{{ url_for('clubs.request_club') }}">
+    {{ form.csrf_token }}
+
+     <div class="mb-3">
+      <label class="form-label">Club Name</label>
+      {{ form.name(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Category</label>
+      {{ form.category(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Objectives</label>
+      {{ form.objectives(class="form-control", rows="3") }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      {{ form.description(class="form-control", rows="3") }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Vision Statement</label>
+      {{ form.vision_statement(class="form-control", rows="2") }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Past Milestones</label>
+      {{ form.past_milestones(class="form-control", rows="2") }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Meeting Schedule</label>
+      {{ form.meeting_schedule(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Location</label>
+      {{ form.location(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Instagram Handle</label>
+      {{ form.instagram(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Twitter Handle</label>
+      {{ form.twitter(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Club Logo</label>
+      {{ form.logo_file(class="form-control") }}
+    </div>
+
+    <div class="d-grid mt-4">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+</div>
+{% endblock %}

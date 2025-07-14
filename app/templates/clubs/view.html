@@ -1,0 +1,185 @@
+<!-- File: app/templates/clubs/view.html -->
+{% extends "base.html" %}
+{% block title %}{{ club.name }} | Club Details{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row g-4">
+    <!-- Club Header & Logo -->
+    <div class="col-md-4 text-center">
+      <img src="{{ url_for('static', filename=club.logo_url or 'images/default-club.jpg') }}"
+           alt="{{ club.name }} Logo"
+           class="img-fluid mb-3 rounded shadow">
+      <!-- {% if club.banner_url %}
+      <img src="{{ url_for('static', filename=club.banner_url) }}"
+           alt="{{ club.name }} Banner"
+           class="img-fluid rounded shadow-sm">
+      {% endif %} -->
+    </div>
+
+    <!-- Club Main Info -->
+    <div class="col-md-8">
+      <h2>{{ club.name }}</h2>
+      <p class="text-muted">{{ club.category }}</p>
+
+      <!-- Objectives -->
+      {% if club.objectives %}
+      <div class="mb-3">
+        <h5>Objectives</h5>
+        <p>{{ club.objectives }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Description -->
+      {% if club.description %}
+      <div class="mb-3">
+        <h5>Description</h5>
+        <p>{{ club.description }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Vision Statement -->
+      {% if club.vision_statement %}
+      <div class="mb-3">
+        <h5>Vision Statement</h5>
+        <p>{{ club.vision_statement }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Past Milestones -->
+      {% if club.past_milestones %}
+      <div class="mb-3">
+        <h5>Past Milestones</h5>
+        <p>{{ club.past_milestones }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Meeting Schedule & Location -->
+      <div class="row mb-3">
+        {% if club.meeting_schedule %}
+        <div class="col-sm-6">
+          <strong>Meeting Schedule:</strong>
+          <p>{{ club.meeting_schedule }}</p>
+        </div>
+        {% endif %}
+        {% if club.location %}
+        <div class="col-sm-6">
+          <strong>Location:</strong>
+          <p>{{ club.location }}</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Social Media -->
+      {% if club.social_media_handles %}
+      <div class="mb-3">
+        <h5>Social Media</h5>
+        {% if club.social_media_handles.instagram %}
+          <p><i class="fab fa-instagram"></i>
+            <a href="https://instagram.com/{{ club.social_media_handles.instagram }}"
+               target="_blank">{{ club.social_media_handles.instagram }}</a>
+          </p>
+        {% endif %}
+        {% if club.social_media_handles.twitter %}
+          <p><i class="fab fa-twitter"></i>
+            <a href="https://twitter.com/{{ club.social_media_handles.twitter }}"
+               target="_blank">{{ club.social_media_handles.twitter }}</a>
+          </p>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Club Leaders -->
+      {% if leaders %}
+      <div class="mb-3">
+        <h5>Club Leadership</h5>
+        <ul class="list-unstyled">
+          {% for lead in leaders %}
+          <li>{{ lead.user.first_name }} {{ lead.user.last_name }} — {{ lead.position.replace("MembershipCoordinator","Membership Coordinator") }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+          <!-- Join / Leave / Pending Button -->
+      {% if current_user.role == 'Student' %}
+        <div class="mb-4">
+          {% if is_member %}
+            {# Already in the club: show Leave #}
+            <form method="POST"
+                  action="{{ url_for('membership.leave_club', club_id=club.club_id) }}">
+              {{ membership_form.csrf_token }}
+              <button type="submit" class="btn btn-danger">Leave Club</button>
+            </form>
+
+          {% elif is_pending %}
+            {# Request is pending: disable button #}
+            <button class="btn btn-secondary" disabled>
+              Request Pending
+            </button>
+
+          {% else %}
+            {# No record (or was Rejected): allow new request #}
+            <form method="POST"
+                  action="{{ url_for('membership.join_club', club_id=club.club_id) }}">
+              {{ membership_form.csrf_token }}
+              <button type="submit" class="btn btn-primary">Join Club</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endif %}
+
+
+      {% if current_user.role == 'Admin' %}
+       <a href="{{ url_for('clubs.manage_leaders', club_id=club.club_id) }}"
+       class="btn btn-outline-secondary mt-3">
+       Manage Leaders
+       </a>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <!-- Gallery & Upload Form -->
+  <div class="mt-5">
+    <h4>Gallery</h4>
+    {% if current_user.role in ['Admin'] or (current_user.role=='ClubLeader' and leaders|selectattr("user_id","equalto",current_user.user_id)|list) %}
+    <form method="POST"
+          action="{{ url_for('clubs.upload_gallery', club_id=club.club_id) }}"
+          enctype="multipart/form-data"
+          class="row g-2 align-items-end mb-4">
+      {{ gallery_form.csrf_token }}
+      <div class="col-auto">
+        {{ gallery_form.image_file(class="form-control") }}
+      </div>
+      <div class="col-auto">
+        {{ gallery_form.caption(class="form-control", placeholder="Caption (optional)") }}
+      </div>
+      <div class="col-auto">
+        {{ gallery_form.submit(class="btn btn-primary") }}
+      </div>
+    </form>
+    {% endif %}
+
+    {% if gallery %}
+    <div class="row g-3">
+      {% for img in gallery %}
+      <div class="col-6 col-md-3">
+        <div class="card">
+          <img src="{{ url_for('static', filename=img.image_url) }}"
+               class="card-img-top" alt="{{ img.caption or 'Gallery image' }}">
+          {% if img.caption %}
+          <div class="card-body p-2">
+            <small class="text-muted">{{ img.caption }}</small>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+      <p class="text-muted">No images in the gallery yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

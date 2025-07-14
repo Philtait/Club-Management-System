@@ -1,0 +1,51 @@
+<!-- File: app/templates/clubs/pending_clubs.html -->
+{% extends "base.html" %}
+{% block title %}Pending Club Requests{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2>Pending Club Requests</h2>
+
+  {% if clubs %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Club Name</th>
+          <th>Category</th>
+          <th>Requested On</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for club in clubs %}
+        <tr>
+          <td>{{ club.name }}</td>
+          <td>{{ club.category }}</td>
+          <td>{{ club.created_at.strftime('%b %d, %Y') }}</td>
+          <td>
+            <a href="{{ url_for('clubs.view_club', club_id=club.club_id) }}"
+               class="btn btn-sm btn-outline-secondary">View</a>
+
+            <form method="POST"
+                  action="{{ url_for('admin.approve_club', club_id=club.club_id) }}"
+                  style="display:inline;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-sm btn-success ms-2">Approve</button>
+            </form>
+
+            <form method="POST"
+                  action="{{ url_for('admin.reject_club', club_id=club.club_id) }}"
+                  style="display:inline;" class="ms-1">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>There are no pending club requests at this time.</p>
+  {% endif %}
+</div>
+{% endblock %}

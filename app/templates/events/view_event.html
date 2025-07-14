@@ -1,0 +1,49 @@
+<!-- File: app/templates/events/view_event.html -->
+{% extends "base.html" %}
+{% block title %}{{ event.title }} | Club Management System{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <h2>{{ event.title }}</h2>
+  <p class="text-muted">{{ event.club.name }} &mdash; {{ event.location }}</p>
+  <p>{{ event.description }}</p>
+
+  <ul class="list-inline">
+    <li class="list-inline-item"><strong>Date:</strong> {{ event.event_date.strftime('%b %d, %Y %I:%M %p') }}</li>
+    {% if event.registration_deadline %}
+    <li class="list-inline-item"><strong>Register By:</strong> {{ event.registration_deadline.strftime('%b %d, %Y %I:%M %p') }}</li>
+    {% endif %}
+    {% if event.max_attendees %}
+    <li class="list-inline-item"><strong>Max Attendees:</strong> {{ event.max_attendees }}</li>
+    {% endif %}
+  </ul>
+
+  {% if current_user.role == 'Student' %}
+    <form method="POST" action="{{ url_for('events.register', event_id=event.event_id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      
+      {% if already_registered %}
+        <button class="btn btn-secondary" disabled>Already Registered</button>
+      {% elif registration_closed %}
+        <button class="btn btn-danger" disabled>Registration Closed</button>
+      {% else %}
+        <button class="btn btn-primary">Register Now</button>
+      {% endif %}
+    </form>
+
+    {% if can_submit_feedback %}
+      <div class="mt-3">
+        {% if feedback_submitted %}
+          <span class="text-success">You have submitted feedback for this event.</span>
+        {% else %}
+          <a href="{{ url_for('feedback.submit_feedback', event_id=event.event_id) }}"
+             class="btn btn-warning">Submit Feedback</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <div class="mt-4">
+    <a href="{{ url_for('events.list_events') }}" class="btn btn-outline-secondary">Back to Events</a>
+  </div>
+</div>
+{% endblock %}

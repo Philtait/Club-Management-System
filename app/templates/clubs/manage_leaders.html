@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Manage Leaders | {{ club.name }}{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <h2>Leaders for {{ club.name }}</h2>
+
+  <table class="table">
+    <thead>
+      <tr><th>Name</th><th>Position</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      {% for ld in leaders %}
+      <tr>
+        <td>{{ ld.user.first_name }} {{ ld.user.last_name }}</td>
+        <td>{{ ld.position.replace('MembershipCoordinator','Membership Coordinator') }}</td>
+        <td>
+          <a href="{{ url_for('clubs.remove_leader', club_id=club.club_id, leader_id=ld.leader_id) }}"
+             class="btn btn-sm btn-danger">Remove</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h4>Assign New Leader</h4>
+  <form method="POST" action="{{ url_for('clubs.manage_leaders', club_id=club.club_id) }}">
+    {{ form.csrf_token }}
+
+    <div class="row g-3 align-items-end">
+      <div class="col-md-5">
+        {{ form.user_id.label(class="form-label") }}
+        {{ form.user_id(class="form-select" + (' is-invalid' if form.user_id.errors else '')) }}
+      </div>
+      <div class="col-md-4">
+        {{ form.position.label(class="form-label") }}
+        {{ form.position(class="form-select" + (' is-invalid' if form.position.errors else '')) }}
+      </div>
+      <div class="col-md-3">
+        {{ form.submit(class="btn btn-primary") }}
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

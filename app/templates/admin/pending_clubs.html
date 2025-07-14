@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Pending Club Requests{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2>Pending Club Creation Requests</h2>
+  {% if clubs %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th><th>Category</th><th>Requested By</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in clubs %}
+      <tr>
+        <td>{{ c.name }}</td>
+        <td>{{ c.category }}</td>
+        <td>{{ c.patron_admin.user.first_name }} {{ c.patron_admin.user.last_name }}</td>
+        <td>
+          <a href="{{ url_for('admin.approve_club', club_id=c.club_id) }}" class="btn btn-sm btn-success">Approve</a>
+          <form action="{{ url_for('admin.reject_club', club_id=c.club_id) }}" method="post" style="display:inline">
+            <button class="btn btn-sm btn-danger">Reject</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No pending requests.</p>
+  {% endif %}
+</div>
+{% endblock %}

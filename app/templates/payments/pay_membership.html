@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Membership Payment{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2>Pay Club Membership</h2>
+  <form method="POST" action="{{ url_for('payments.pay_membership') }}">
+    {{ form.csrf_token }}
+
+    <div class="mb-3">
+      <label class="form-label">Select Club</label>
+      {{ form.club_id(class="form-select") }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Amount (KES)</label>
+      {{ form.amount(class="form-control") }}
+    </div>
+    <div class="d-grid mt-3">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+</div>
+{% endblock %}
